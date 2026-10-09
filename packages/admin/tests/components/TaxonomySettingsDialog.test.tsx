@@ -166,9 +166,9 @@ describe("taxonomy definition settings", () => {
 		await expect
 			.element(screen.getByRole("textbox", { name: "Identifier", exact: true }))
 			.toHaveValue("genre");
-		expect(
-			screen.getByRole("textbox", { name: "Identifier", exact: true }).element(),
-		).toHaveProperty("readOnly", true);
+		await expect
+			.element(screen.getByRole("textbox", { name: "Identifier", exact: true }))
+			.toBeDisabled();
 		await screen.getByRole("textbox", { name: "Label", exact: true }).fill("Reading genres");
 		await screen.getByRole("button", { name: "Save changes", exact: true }).click();
 		await expect
