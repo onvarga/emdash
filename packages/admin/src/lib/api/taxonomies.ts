@@ -70,6 +70,13 @@ export interface CreateTaxonomyInput {
 	translationOf?: string;
 }
 
+export interface UpdateTaxonomyInput {
+	label?: string;
+	labelSingular?: string | null;
+	hierarchical?: boolean;
+	collections?: string[];
+}
+
 export interface CreateTermInput {
 	slug?: string;
 	label: string;
@@ -148,6 +155,37 @@ export async function fetchTaxonomyDef(
 ): Promise<TaxonomyDef | null> {
 	const defs = await fetchTaxonomyDefs(options);
 	return defs.find((t) => t.name === name) || null;
+}
+
+export async function getTaxonomy(name: string, options: LocaleOptions = {}): Promise<TaxonomyDef> {
+	const response = await apiFetch(
+		withLocale(`${API_BASE}/taxonomies/${encodeURIComponent(name)}`, options.locale),
+	);
+	const data = await parseApiResponse<{ taxonomy: TaxonomyDef }>(
+		response,
+		i18n._(msg`Failed to fetch taxonomy`),
+	);
+	return data.taxonomy;
+}
+
+export async function updateTaxonomy(
+	name: string,
+	input: UpdateTaxonomyInput,
+	options: LocaleOptions = {},
+): Promise<TaxonomyDef> {
+	const response = await apiFetch(
+		withLocale(`${API_BASE}/taxonomies/${encodeURIComponent(name)}`, options.locale),
+		{
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(input),
+		},
+	);
+	const data = await parseApiResponse<{ taxonomy: TaxonomyDef }>(
+		response,
+		i18n._(msg`Failed to update taxonomy`),
+	);
+	return data.taxonomy;
 }
 
 /**

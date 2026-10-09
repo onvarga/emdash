@@ -442,7 +442,7 @@ describe("TaxonomyManager", () => {
 
 		const dialog = screen.getByRole("dialog");
 		await dialog.getByRole("textbox", { name: "Label" }).fill("Topics");
-		await expect.element(dialog.getByRole("textbox", { name: "Name" })).toHaveValue("topics");
+		await expect.element(dialog.getByRole("textbox", { name: "Identifier" })).toHaveValue("topics");
 		await dialog.getByRole("button", { name: "Create Taxonomy" }).click();
 
 		await vi.waitFor(() => {

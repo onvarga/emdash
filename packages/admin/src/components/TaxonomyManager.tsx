@@ -60,6 +60,7 @@ import { DialogError, getMutationError } from "./DialogError.js";
 import { FieldHelpLabel } from "./FieldHelpLabel.js";
 import { LocaleSwitcher, useI18nConfig } from "./LocaleSwitcher.js";
 import { TableToolbarSearch } from "./TableToolbar.js";
+import { TaxonomySettingsDialog } from "./TaxonomySettingsDialog.js";
 import { TranslationsPanel } from "./TranslationsPanel.js";
 
 export function TaxonomyNotFoundMessage({ taxonomyName }: { taxonomyName: string }) {
@@ -69,6 +70,7 @@ export function TaxonomyNotFoundMessage({ taxonomyName }: { taxonomyName: string
 
 interface TaxonomyManagerProps {
 	taxonomyName: string;
+	canManageTaxonomies?: boolean;
 	/** Called after the taxonomy itself is deleted, so the host can route away. */
 	onDeleted?: () => void;
 }
@@ -1040,7 +1042,7 @@ function CreateTaxonomyDialog({
 
 						<div>
 							<Input
-								label={t`Name`}
+								label={t`Identifier`}
 								value={name}
 								onChange={(e) => {
 									setName(e.target.value);
@@ -1110,7 +1112,11 @@ function CreateTaxonomyDialog({
 /**
  * Main TaxonomyManager component
  */
-export function TaxonomyManager({ taxonomyName, onDeleted }: TaxonomyManagerProps) {
+export function TaxonomyManager({
+	taxonomyName,
+	canManageTaxonomies = false,
+	onDeleted,
+}: TaxonomyManagerProps) {
 	const { t, i18n: lingui } = useLingui();
 	const queryClient = useQueryClient();
 	const toastManager = Toast.useToastManager();
@@ -1118,6 +1124,7 @@ export function TaxonomyManager({ taxonomyName, onDeleted }: TaxonomyManagerProp
 	const [editingTerm, setEditingTerm] = React.useState<TaxonomyTerm | undefined>();
 	const [deleteTarget, setDeleteTarget] = React.useState<TaxonomyTerm | null>(null);
 	const [createTaxonomyOpen, setCreateTaxonomyOpen] = React.useState(false);
+	const [taxonomySettingsOpen, setTaxonomySettingsOpen] = React.useState(false);
 	const [deleteTaxonomyOpen, setDeleteTaxonomyOpen] = React.useState(false);
 	const [bulkTagOpen, setBulkTagOpen] = React.useState(false);
 	const [tagSearch, setTagSearch] = React.useState("");
@@ -1350,6 +1357,13 @@ export function TaxonomyManager({ taxonomyName, onDeleted }: TaxonomyManagerProp
 							}
 						/>
 						<DropdownMenu.Content align="end">
+							<DropdownMenu.Item
+								icon={<Pencil className="me-2 size-4" aria-hidden="true" />}
+								onClick={() => setTaxonomySettingsOpen(true)}
+							>
+								{t`Edit taxonomy`}
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
 							{taxonomyName === "tag" && (
 								<>
 									<DropdownMenu.Item
@@ -1562,6 +1576,14 @@ export function TaxonomyManager({ taxonomyName, onDeleted }: TaxonomyManagerProp
 					toastManager.add({ title: t`Taxonomy created` });
 				}}
 			/>
+			{taxonomySettingsOpen && (
+				<TaxonomySettingsDialog
+					taxonomyName={taxonomyName}
+					locale={activeLocale}
+					canManage={canManageTaxonomies}
+					onClose={() => setTaxonomySettingsOpen(false)}
+				/>
+			)}
 		</div>
 	);
 }
