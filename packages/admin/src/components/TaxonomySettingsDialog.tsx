@@ -165,7 +165,12 @@ function TaxonomySettingsForm({
 				{!canManage && (
 					<p className="text-sm text-kumo-subtle">{t`You have read-only access to these settings.`}</p>
 				)}
-				<Input label={t`Identifier`} value={initial.name} disabled />
+				<Input
+					label={t`Identifier`}
+					value={initial.name}
+					disabled
+					className="disabled:text-kumo-inactive"
+				/>
 				<p className="text-xs text-kumo-subtle">{t`The taxonomy identifier cannot be changed.`}</p>
 				<Checkbox
 					label={t`Hierarchical (like categories, with parent/child relationships)`}
